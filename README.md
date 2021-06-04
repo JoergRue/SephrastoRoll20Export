@@ -3,7 +3,7 @@
 ## Anleitung
 
 1. Dateien ins Plugins-Verzeichnis von Sephrasto kopieren (normalerweise Dokumente\sephrasto\plugins)
-    * Entweder die kompletten Dateien aus dem Download-Zip
+    * Entweder die kompletten Dateien aus dem [Download-Zip](https://github.com/JoergRue/SephrastoRoll20Export/releases/download/1.0.0/roll20export.zip)
     * Oder wenn die Sourcen von hier sind muss noch das json-Package aus dem Download-Zip hinzugenommen werden
 3. Im Browser die [VTT Enhancement Suite](https://justas-d.github.io/roll20-enhancement-suite/) installieren
 4. Im Roll20 das [Ilaris-Charactersheet](https://dsaforum.de/viewtopic.php?f=180&t=53410) verwenden
