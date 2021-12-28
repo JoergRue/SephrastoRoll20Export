@@ -2,13 +2,18 @@
 
 ## Anleitung
 
+### Installation
 1. Dateien ins Plugins-Verzeichnis von Sephrasto kopieren (normalerweise Dokumente\sephrasto\plugins)
-    * Entweder die kompletten Dateien aus dem [Download-Zip](https://github.com/JoergRue/SephrastoRoll20Export/releases/download/1.0.0/roll20export.zip)
-    * Oder wenn die Sourcen von hier sind muss noch das json-Package aus dem Download-Zip hinzugenommen werden
-3. Im Browser die [VTT Enhancement Suite](https://justas-d.github.io/roll20-enhancement-suite/) installieren
-4. Im Roll20 das [Ilaris-Charactersheet](https://dsaforum.de/viewtopic.php?f=180&t=53410) verwenden
-5. Im Roll20 das (ggf. noch ziemlich leere) Character-Sheet mit der VTT Enhancement Suite in ein JSON-File exportieren.
-6. Im Sephrasto gibt's einen neuen Button "Roll20 Export". Bei Sephrasto < 1.4 ist der noch auf dem Beschreibungs-Tab, ab 1.4.0 ist er rechts unten neben dem PDF-Export. Den verwenden und das JSON-File auswählen.
-7. Wieder im Roll20 mittels der "Overwrite" Funktionalität der VTT Enhancement Suite die Daten importieren.
+1. Im Browser die [VTT Enhancement Suite](https://justas-d.github.io/roll20-enhancement-suite/) installieren
+1. Im Roll20 das [Ilaris-Charactersheet](https://dsaforum.de/viewtopic.php?f=180&t=53410) verwenden
 
-Wenn man später im Sephrasto Änderungen gemacht hat, die letzten beiden Schritte wiederholen. Wenn man zwischendurch auch im Roll20 Änderungen gemacht hat (z.B. Wunden, aktuelle AE, ...), die letzten drei Schritte wiederholen.
+### Erste Erstellung / Import eines Charakters
+1. Im Sephrasto gibt's einen neuen Button "Roll20 Export" rechts unten neben dem PDF-Export. Den verwenden und ein JSON-File angeben.
+1. Im Roll20 einen neuen Charakter anlegen. Mittels der "Overwrite" Funktionalität der VTT Enhancement Suite die Daten importieren.
+
+### Aktualisierung eines Charakters
+
+1. Falls man im Roll20 Änderungen gemacht hat (z.B. Notizen, Wunden), die nicht verloren gehen sollen: mit der VTT Enhancement Suite die Daten in ein JSON-File exportieren.
+1. Im Sephrasto mit dem Roll20 Export dieses JSON-File mit den aktualisierten Daten überschreiben.
+1. Im Roll20 das File wieder mit "Overwrite" der VTT Enhancement Suite importieren.
+
