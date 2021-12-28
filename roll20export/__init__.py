@@ -17,7 +17,6 @@ def doRoll20Export():
         
     # Let the user choose a saving location and name
     saveFileDialog = QtWidgets.QFileDialog(None, "Roll20-Charakterbogen aktualisieren...", startDir, "JSON-Datei (*.json)")
-    saveFileDialog.setFileMode(QtWidgets.QFileDialog.ExistingFile)
     spath = ""
     if saveFileDialog.exec_():
         spath = saveFileDialog.selectedFiles()[0]

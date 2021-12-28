@@ -6,6 +6,7 @@ Created on Thu Jun 11 13:06:27 2029
 
 Class to handle export to roll20 json
 """
+from genericpath import exists
 from Wolke import Wolke
 import Definitionen
 import Objekte
@@ -32,8 +33,12 @@ class roll20Exporter(object):
     def exportCharacter(self, filename):
         Wolke.Char.aktualisieren()
 
+        infilename = filename
+        if not exists(filename):
+            infilename = os.path.join(Wolke.Settings['Pfad-Plugins'], "roll20export", "Empty.json")
+
         # load the file into memory
-        with open(filename, "r", encoding="utf8") as read_file:
+        with open(infilename, "r", encoding="utf8") as read_file:
             data = json.load(read_file)
 
         # update data
@@ -41,6 +46,8 @@ class roll20Exporter(object):
             self.updateCharacterData(data["attribs"], Wolke.Char)
         elif ("character" in data and "attribs" in data["character"]):
             self.updateCharacterData(data["character"]["attribs"], Wolke.Char)
+            if (("name" not in data["character"]) or (data["character"]["name"] == "")):
+                data["character"]["name"] = Wolke.Char.name
         else:
             return False
 

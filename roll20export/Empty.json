@@ -1,0 +1,36 @@
+{
+    "schema_version": 3,
+    "type": "character",
+    "character": {
+        "oldId": "-Ms-HqE59N0Rdp6IIn6-",
+        "name": "",
+        "avatar": "",
+        "bio": "",
+        "gmnotes": "",
+        "defaulttoken": "",
+        "tags": "[]",
+        "controlledby": "",
+        "inplayerjournals": "",
+        "attribs": [
+            {
+                "name": "sheet-roll-gm",
+                "current": 0,
+                "max": "",
+                "id": "-Ms-I1th4uBzmoFpvwZj"
+            },
+            {
+                "name": "wmod",
+                "current": 0,
+                "max": "",
+                "id": "-Ms-I1tkWEl9HDiPw4Jf"
+            },
+            {
+                "name": "wounds",
+                "current": 8,
+                "max": "",
+                "id": "-Ms-I1tmnnDvDXYm5b-X"
+            }
+        ],
+        "abilities": []
+    }
+}
