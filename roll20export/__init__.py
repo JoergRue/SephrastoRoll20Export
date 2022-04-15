@@ -35,13 +35,11 @@ def doRoll20Export():
             infoBox.setText("JSON-File ungültig!")
         infoBox.exec_()
     except Exception as e:
-        logging.error("Sephrasto Fehlercode " + str(Wolke.Fehlercode) + ". Exception: " + str(e))
+        logging.error("Sephrasto Exception: " + str(e))
         infoBox = QtWidgets.QMessageBox()
         infoBox.setIcon(QtWidgets.QMessageBox.Information)
         infoBox.setText("JSON-Aktualisierung fehlgeschlagen!")
         infoBox.setInformativeText("Beim Aktualisieren des Charakterbogens ist ein Fehler aufgetreten.\n\
-Fehlercode: " + str(Wolke.Fehlercode) + "\n\
-Fehlermeldung: " + Wolke.ErrorCode[Wolke.Fehlercode] + "\n\
 Exception: " + traceback.format_exc())
         infoBox.setWindowTitle("JSON-Aktualisierung fehlgeschlagen.")
         infoBox.setStandardButtons(QtWidgets.QMessageBox.Ok)
@@ -54,6 +52,10 @@ class Plugin:
         if Version._sephrasto_version_major < 2 and Version._sephrasto_version_minor < 4:
             EventBus.addFilter("class_beschreibung_wrapper", self.provideBeschrWrapper)
 
+    @staticmethod
+    def getDescription():
+        return "Export für Roll20"
+    
     def createCharakterButtons(self):
         self.roll20ExportButton = QtWidgets.QPushButton()
         self.roll20ExportButton.setObjectName("roll20ExportButton")

@@ -127,9 +127,6 @@ class roll20Exporter(object):
             "Derekunde": "der",
             "Magiekunde": "mag"}
 
-        assert len(attrNames) == len(Definitionen.StandardFerts) - 6 # nicht Kampffertigkeiten
-        for fert in attrNames.keys():
-            assert fert in Definitionen.StandardFerts
         additionalFerts = []
         for fertKey, fert in char.fertigkeiten.items():
             if fert.name in attrNames:
@@ -211,61 +208,58 @@ class roll20Exporter(object):
                 self.setCurrentAttrValue(attribs, attr + "mod_sn" + str(talCount), fertAttrValues[attr])
             talCount += 1
 
-    def ignoreBE(self, weapon, char):
-        fertigkeit = ""
-        talent = ""
-        if weapon.name in Wolke.DB.waffen:
-            fertigkeit = Wolke.DB.waffen[weapon.name].fertigkeit
-            talent = Wolke.DB.waffen[weapon.name].talent
-        if not fertigkeit in char.fertigkeiten:
-            return False
-        kampfstilMods = KampfstilMod()
-        if weapon.kampfstil in char.kampfstilMods:
-            kampfstilMods = char.kampfstilMods[weapon.kampfstil]
-        for values in kampfstilMods.BEIgnore:
-            if values[0] == fertigkeit and values[1] == talent:
-                return True
-        return False
-
     def updateWaffen(self, attribs, char):
         weaponCount = 1
         nkWeaponCount = 1
         fkWeaponCount = 1
+        additionalFKWeapons = []
+        additionalNKWeapons = []
         for weapon in char.waffen:
             waffenwerte = char.waffenwerte[weaponCount - 1]
-            # the values given from the char include modification by BE
+            # the values given from the char include modification by BE (also considering the kampfstil)
             # the character sheet expects the values without the modification and adds the modification itself
+            # so we have to add the BE to the values again
             beMod = char.be
-            # the character sheet doesn't know the kampfstil, so it is probably wrong for the case that the
-            # kampfstil ignores the BE. So in that case, let's _add_ the be to the values a second time, then
-            # the value is correct again after the sheet removes the BE
-            if self.ignoreBE(weapon, char):
-                beMod = self.be
             if type(weapon) == Objekte.Fernkampfwaffe or (weapon.name in Wolke.DB.waffen and Wolke.DB.waffen[weapon.name].talent == 'Lanzenreiten'):
-                base = "fkw" + str(fkWeaponCount)
-                self.setCurrentAttrValue(attribs, base + "_dmd", weapon.W6)
-                self.setCurrentAttrValue(attribs, base + "_dmn", weapon.plus)
-                self.setCurrentAttrValue(attribs, base + "_at", waffenwerte.AT + beMod)
-                self.setCurrentAttrValue(attribs, base + "_t", weapon.anzeigename)
+                if fkWeaponCount <= 3:
+                    base = "fkw" + str(fkWeaponCount)
+                    self.setCurrentAttrValue(attribs, base + "_dmd", weapon.W6)
+                    self.setCurrentAttrValue(attribs, base + "_dmn", weapon.plus)
+                    self.setCurrentAttrValue(attribs, base + "_at", waffenwerte.AT + beMod)
+                    self.setCurrentAttrValue(attribs, base + "_t", weapon.anzeigename)
+                else:
+                    values = [weapon.anzeigename, waffenwerte.AT + beMod, weapon.W6, weapon.plus]
+                    additionalFKWeapons.append(values)
                 fkWeaponCount += 1
             else:
-                base = "w" + str(nkWeaponCount)
-                self.setCurrentAttrValue(attribs, base + "_dmd", weapon.W6)
                 # character sheet expects tp including kampfstil, but excluding damage bonus from KK
                 # weapon.plus is without both
                 # waffenwerte.TPPlus is including kampfstil and including damage bonus
-                if "Kopflastig" in weapon.eigenschaften:
-                    self.setCurrentAttrValue(attribs, base + "_dmn", waffenwerte.TPPlus - 2 * char.schadensbonus)
-                else:
-                    self.setCurrentAttrValue(attribs, base + "_dmn", waffenwerte.TPPlus - char.schadensbonus)
-                # character sheet expects at including kampfstil, waffenwerte.AT is correct except for BE
-                self.setCurrentAttrValue(attribs, base + "_at", waffenwerte.AT + beMod)
-                self.setCurrentAttrValue(attribs, base + "_vt", waffenwerte.VT + beMod)
-                self.setCurrentAttrValue(attribs, base + "_t", weapon.anzeigename)
+                tpn = waffenwerte.TPPlus - char.schadensbonus
                 kl = 1 if "Kopflastig" in weapon.eigenschaften else 0
-                self.setCurrentAttrValue(attribs, "kl" + base, kl)
+                if "Kopflastig" in weapon.eigenschaften:
+                    tpn = tpn - char.schadensbonus
+                if nkWeaponCount <= 5:
+                    base = "w" + str(nkWeaponCount)
+                    self.setCurrentAttrValue(attribs, base + "_dmd", weapon.W6)
+                    self.setCurrentAttrValue(attribs, base + "_dmn", tpn)
+                    # character sheet expects at including kampfstil, waffenwerte.AT is correct except for BE
+                    self.setCurrentAttrValue(attribs, base + "_at", waffenwerte.AT + beMod)
+                    self.setCurrentAttrValue(attribs, base + "_vt", waffenwerte.VT + beMod)
+                    self.setCurrentAttrValue(attribs, base + "_t", weapon.anzeigename)
+                    self.setCurrentAttrValue(attribs, "kl" + base, kl)
+                else:
+                    values = [weapon.anzeigename, waffenwerte.AT + beMod, waffenwerte.VT + beMod, weapon.W6, tpn, kl]
+                    additionalNKWeapons.append(values)
                 nkWeaponCount += 1
             weaponCount += 1
+        if len(additionalFKWeapons) > 0:
+            appendices = ["_t", "_at", "_dmd", "_dmn"]
+            self.setRepeatingAttrValuesEx(attribs, "additionalrangedweapon", "fkwrep", appendices, additionalFKWeapons)
+        if len(additionalNKWeapons) > 0:
+            appendices = ["_t", "_at", "_vt", "_dmd", "_dmn", "_klwrep"]
+            appendPattern2 = [True, True, True, True, True, False]
+            self.setRepeatingAttrValuesEx2(attribs, "additionalweapon", "wrep", appendices, additionalNKWeapons, appendPattern2)
 
     def updateRuestung(self, attribs, char):
         if len(char.rüstung) > 0:
@@ -302,6 +296,9 @@ class roll20Exporter(object):
         self.setRepeatingAttrValuesEx(attribs, basenamePattern1, basenamePattern2, appendices, valueList)
 
     def setRepeatingAttrValuesEx(self, attribs, basenamePattern1, basenamePattern2, appendices, valueList):
+        self.setRepeatingAttrValuesEx2(attribs, basenamePattern1, basenamePattern2, appendices, valueList, [])
+
+    def setRepeatingAttrValuesEx2(self, attribs, basenamePattern1, basenamePattern2, appendices, valueList, appendPattern2):
         existingList = []
         # first find all existing lines
         # the lines all start with "repeating", then the first name, then an ID which is unique for the line,
@@ -324,7 +321,10 @@ class roll20Exporter(object):
                 attrName = "repeating_"+ basenamePattern1  + "_" + self.generateRepeatingAttrId() + "_" + basenamePattern2
             valueIndex = 0
             for appendix in appendices:
-                self.setCurrentAttrValue(attribs, attrName + appendix, values[valueIndex])
+                attrName2 = attrName
+                if len(appendPattern2) > valueIndex and not appendPattern2[valueIndex]:
+                    attrName2 = attrName[0:len(attrName) - len(basenamePattern2) - 1]
+                self.setCurrentAttrValue(attribs, attrName2 + appendix, values[valueIndex])
                 valueIndex += 1
 
     def generateAttrId(self):

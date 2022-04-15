@@ -9,7 +9,7 @@
 
 ### Erste Erstellung / Import eines Charakters
 1. Im Sephrasto gibt's einen neuen Button "Roll20 Export" rechts unten neben dem PDF-Export. Den verwenden und ein JSON-File angeben.
-1. Im Roll20 einen neuen Charakter anlegen. Mittels der "Overwrite" Funktionalität der VTT Enhancement Suite die Daten importieren.
+1. Im Roll20 mittls der "Import Character" Funktion der VTT Enhancement Suite die Daten importieren.
 
 ### Aktualisierung eines Charakters
 
