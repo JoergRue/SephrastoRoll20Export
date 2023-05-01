@@ -99,9 +99,9 @@ class roll20Exporter(object):
                 talStr += el2[11:]
             else:
                 talStr += el2
-            if el2 in char.talenteVariable:
-                vk = char.talenteVariable[el2]
-                talStr += " (" + vk.kommentar + ")"
+            if el2 in char.talenteKommentare:
+                kommentar = char.talenteKommentare[el2]
+                talStr += " (" + kommentar + ")"
         return talStr
 
     def updateFertigkeit(self, attribs, attrName, fert, char):
@@ -175,7 +175,7 @@ class roll20Exporter(object):
                         gekaufteTalente) == 0:
                 continue
             fertsList.append(f)
-        fertsList.sort(key = lambda x: (Wolke.DB.übernatürlicheFertigkeiten[x].printclass, x))
+        fertsList = sorted(fertsList, key = lambda f: (Wolke.DB.übernatürlicheFertigkeiten[f].typ, f))
 
         # find highest talent value, talent could be in serveral fertigkeiten
         talsValues = {}
@@ -195,9 +195,9 @@ class roll20Exporter(object):
         for tal, val in talsValues.items():
             self.setCurrentAttrValue(attribs, "sn" + str(talCount), val)
             mod = ""
-            if tal in char.talenteVariable:
-                vk = char.talenteVariable[tal]
-                mod = " (" + vk.kommentar + ")"
+            if tal in char.talenteKommentare:
+                kommentar = char.talenteKommentare[tal]
+                mod = " (" + kommentar + ")"
             self.setCurrentAttrValue(attribs, "sn" + str(talCount) + "_t", tal + mod)
             fertAttrValues = {}
             for attr in Definitionen.Attribute.keys():
@@ -223,33 +223,33 @@ class roll20Exporter(object):
             if type(weapon) == Objekte.Fernkampfwaffe or (weapon.name in Wolke.DB.waffen and Wolke.DB.waffen[weapon.name].talent == 'Lanzenreiten'):
                 if fkWeaponCount <= 3:
                     base = "fkw" + str(fkWeaponCount)
-                    self.setCurrentAttrValue(attribs, base + "_dmd", weapon.W6)
+                    self.setCurrentAttrValue(attribs, base + "_dmd", weapon.würfel)
                     self.setCurrentAttrValue(attribs, base + "_dmn", weapon.plus)
-                    self.setCurrentAttrValue(attribs, base + "_at", waffenwerte.AT + beMod)
+                    self.setCurrentAttrValue(attribs, base + "_at", waffenwerte.at + beMod)
                     self.setCurrentAttrValue(attribs, base + "_t", weapon.anzeigename)
                 else:
-                    values = [weapon.anzeigename, waffenwerte.AT + beMod, weapon.W6, weapon.plus]
+                    values = [weapon.anzeigename, waffenwerte.at + beMod, weapon.würfel, weapon.plus]
                     additionalFKWeapons.append(values)
                 fkWeaponCount += 1
             else:
                 # character sheet expects tp including kampfstil, but excluding damage bonus from KK
                 # weapon.plus is without both
-                # waffenwerte.TPPlus is including kampfstil and including damage bonus
-                tpn = waffenwerte.TPPlus - char.schadensbonus
+                # waffenwerte.plus is including kampfstil and including damage bonus
+                tpn = waffenwerte.plus - char.schadensbonus
                 kl = 1 if "Kopflastig" in weapon.eigenschaften else 0
                 if "Kopflastig" in weapon.eigenschaften:
                     tpn = tpn - char.schadensbonus
                 if nkWeaponCount <= 5:
                     base = "w" + str(nkWeaponCount)
-                    self.setCurrentAttrValue(attribs, base + "_dmd", weapon.W6)
+                    self.setCurrentAttrValue(attribs, base + "_dmd", weapon.würfel)
                     self.setCurrentAttrValue(attribs, base + "_dmn", tpn)
-                    # character sheet expects at including kampfstil, waffenwerte.AT is correct except for BE
-                    self.setCurrentAttrValue(attribs, base + "_at", waffenwerte.AT + beMod)
-                    self.setCurrentAttrValue(attribs, base + "_vt", waffenwerte.VT + beMod)
+                    # character sheet expects at including kampfstil, waffenwerte.at is correct except for BE
+                    self.setCurrentAttrValue(attribs, base + "_at", waffenwerte.at + beMod)
+                    self.setCurrentAttrValue(attribs, base + "_vt", waffenwerte.vt + beMod)
                     self.setCurrentAttrValue(attribs, base + "_t", weapon.anzeigename)
                     self.setCurrentAttrValue(attribs, "kl" + base, kl)
                 else:
-                    values = [weapon.anzeigename, waffenwerte.AT + beMod, waffenwerte.VT + beMod, weapon.W6, tpn, kl]
+                    values = [weapon.anzeigename, waffenwerte.at + beMod, waffenwerte.vt + beMod, weapon.würfel, tpn, kl]
                     additionalNKWeapons.append(values)
                 nkWeaponCount += 1
             weaponCount += 1
